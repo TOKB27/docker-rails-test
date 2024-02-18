@@ -1,0 +1,30 @@
+# 環境変数など設定するため、外部公開はNG。今回はOK。
+version: '3'
+
+volumes:
+  db-data:
+
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+    volumes: # マウント位置、相対パスで書く（人によって実行場所は違うため。）
+      - '.:/docker-rails-test'
+    environment: # 環境変数内容
+      - 'DATABASE_USER=postgres'
+      - 'DATABASE_PASSWORD=postgres'
+    tty: true # run時の-tに相当
+    stdin_open: true # run時の-iに相当
+    depends_on:
+      - db
+    links:
+      - db
+
+  db:
+    image: postgres
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
